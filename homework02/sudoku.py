@@ -1,12 +1,12 @@
 import pathlib
-import typing as tp
 import random
+import typing as tp
 
 T = tp.TypeVar("T")
 
 
 def read_sudoku(path: tp.Union[str, pathlib.Path]) -> tp.List[tp.List[str]]:
-    """ Прочитать Судоку из указанного файла """
+    """Прочитать Судоку из указанного файла"""
     path = pathlib.Path(path)
     with path.open() as f:
         puzzle = f.read()
@@ -20,15 +20,11 @@ def create_grid(puzzle: str) -> tp.List[tp.List[str]]:
 
 
 def display(grid: tp.List[tp.List[str]]) -> None:
-    """Вывод Судоку """
+    """Вывод Судоку"""
     width = 2
     line = "+".join(["-" * (width * 3)] * 3)
     for row in range(9):
-        print(
-            "".join(
-                grid[row][col].center(width) + ("|" if str(col) in "25" else "") for col in range(9)
-            )
-        )
+        print("".join(grid[row][col].center(width) + ("|" if str(col) in "25" else "") for col in range(9)))
         if str(row) in "25":
             print(line)
     print()
@@ -43,8 +39,8 @@ def group(values: tp.List[T], n: int) -> tp.List[tp.List[T]]:
     [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
     """
     if n <= 0:
-        raise ValueError('You have to write positive number of group size')
-    return [values[i:i + n] for i in range(0, len(values), n)]
+        raise ValueError("You have to write positive number of group size")
+    return [values[i : i + n] for i in range(0, len(values), n)]
 
 
 def get_row(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -> tp.List[str]:
@@ -58,7 +54,7 @@ def get_row(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -> tp.List[str
     """
     row, col = pos
     if row < 0 or row >= len(grid):
-        raise IndexError('Incorrect index')
+        raise IndexError("Incorrect index")
     return grid[row]
 
 
@@ -73,7 +69,7 @@ def get_col(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -> tp.List[str
     """
     row, col = pos
     if row < 0 or row >= len(grid):
-        raise IndexError('Incorrect index')
+        raise IndexError("Incorrect index")
     else:
         d = []
         for i in range(len(grid)):
@@ -93,7 +89,7 @@ def get_block(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -> tp.List[s
     """
     row, col = pos
     if not (0 <= row < 9 and 0 <= col < 9):
-        raise IndexError('Incorrect index')
+        raise IndexError("Incorrect index")
     row_stop = (row // 3) * 3
     col_stop = (col // 3) * 3
     d = []
@@ -116,7 +112,7 @@ def find_empty_positions(grid: tp.List[tp.List[str]]) -> tp.Optional[tp.Tuple[in
         in_row = grid[i]
         for j in range(len(in_row)):
             in_col = in_row[j]
-            if in_col == '.':
+            if in_col == ".":
                 return (i, j)
     return None
 
@@ -131,7 +127,7 @@ def find_possible_values(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -
     >>> values == {'2', '5', '9'}
     True
     """
-    poss_values = set('123456789')
+    poss_values = set("123456789")
     block_values = set(get_block(grid, pos))
     row_values = set(get_row(grid, pos))
     col_values = set(get_col(grid, pos))
@@ -140,7 +136,7 @@ def find_possible_values(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -
 
 
 def solve(grid: tp.List[tp.List[str]]) -> tp.Optional[tp.List[tp.List[str]]]:
-    """ Решение пазла, заданного в grid """
+    """Решение пазла, заданного в grid"""
     """ Как решать Судоку?
         1. Найти свободную позицию
         2. Найти все возможные значения, которые могут находиться на этой позиции
@@ -161,22 +157,21 @@ def solve(grid: tp.List[tp.List[str]]) -> tp.Optional[tp.List[tp.List[str]]]:
         sol = solve(grid)
         if sol:
             return sol
-        grid[row][col] = '.'
+        grid[row][col] = "."
     return None
 
 
 def check_solution(solution: tp.List[tp.List[str]]) -> bool:
-    """ Если решение solution верно, то вернуть True, в противном случае False """
+    """Если решение solution верно, то вернуть True, в противном случае False"""
+
     # TODO: Add doctests with bad puzzles
     def test_val(group: tp.List[str]) -> bool:
-        values = [i for i in group if i != '.']
-        return (
-                all(i in '123456789' for i in values) and len(values) == len(set(values)))
+        values = [i for i in group if i != "."]
+        return all(i in "123456789" for i in values) and len(values) == len(set(values))
 
     for row_stop in range(0, 9, 3):
         for col_stop in range(0, 9, 3):
-            stop = [solution[i][j] for i in range(row_stop, row_stop + 3) for j in
-                     range(col_stop, col_stop + 3)]
+            stop = [solution[i][j] for i in range(row_stop, row_stop + 3) for j in range(col_stop, col_stop + 3)]
             if not test_val(stop):
                 return False
 
@@ -213,7 +208,7 @@ def generate_sudoku(N: int) -> tp.List[tp.List[str]]:
     >>> check_solution(solution)
     True
     """
-    grid = [['.' for j in range(9)] for i in range(9)]
+    grid = [["." for j in range(9)] for i in range(9)]
     sol = solve(grid)
     if not sol:
         return grid
@@ -223,7 +218,7 @@ def generate_sudoku(N: int) -> tp.List[tp.List[str]]:
     random.shuffle(pos)
     for i in range(81 - N):
         row, col = pos[i]
-        grid[row][col] = '.'
+        grid[row][col] = "."
     return grid
 
 
